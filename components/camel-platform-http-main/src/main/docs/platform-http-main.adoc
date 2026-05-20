@@ -42,6 +42,34 @@ These features are as follows:
 
 You configure these features in the `application.properties` file using the `camel.server.xxx` and `camel.management.xxx` options.
 
+== JWT authentication
+
+The embedded HTTP server can require a JWT bearer token on incoming requests. JWT validation is configured via the
+`camel.server.xxx` (or `camel.management.xxx`) properties below.
+
+Token signature verification uses a keystore. The `exp` (expiration) and `nbf` (not before) claims are validated by
+default. The `iss` (issuer) and `aud` (audience) claims are validated only when their corresponding properties are
+set — when both are unset, signature/expiration validation behaviour is unchanged.
+
+[source,properties]
+----
+camel.server.enabled=true
+camel.server.authenticationEnabled=true
+camel.server.authenticationPath=/*
+
+# Required: keystore for JWT signature verification
+camel.server.jwtKeystoreType=jks
+camel.server.jwtKeystorePath=keystore.jks
+camel.server.jwtKeystorePassword=changeme
+
+# Optional: enforce iss (issuer) and aud (audience) claims (RFC 7519 / RFC 8725)
+camel.server.jwtIssuer=https://issuer.example.com
+camel.server.jwtAudience=api,internal-api
+----
+
+`jwtAudience` accepts a comma-separated list. A token whose `aud` claim matches **any** of the configured values is
+accepted.
+
 == See More
 
 - xref:platform-http-vertx.adoc[Platform HTTP Vert.x]
